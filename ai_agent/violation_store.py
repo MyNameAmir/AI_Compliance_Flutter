@@ -5,12 +5,13 @@ from sqlalchemy.exc import SQLAlchemyError
 
 # -----------------------------
 # 🔐 AWS MYSQL CREDENTIALS
+# Must be set via environment variables
 # -----------------------------
-MYSQL_HOST = "ehospital-mysql-01.c416qa6w68fw.us-east-1.rds.amazonaws.com"
-MYSQL_PORT = 3306
-MYSQL_USER = "admin"
-MYSQL_PASS = "6fLj_hebaMs9idgNyndy"
-MYSQL_DB   = "violation_cases"
+MYSQL_HOST = os.getenv("MYSQL_HOST")
+MYSQL_PORT = int(os.getenv("MYSQL_PORT", "3306"))
+MYSQL_USER = os.getenv("MYSQL_USER")
+MYSQL_PASS = os.getenv("MYSQL_PASS")
+MYSQL_DB   = os.getenv("MYSQL_DB")
 
 # -----------------------------
 # 🔌 SQLAlchemy Engine
@@ -28,7 +29,7 @@ def initialize_database() -> None:
     Equivalent to the SQLite version.
     """
     create_table_sql = """
-        CREATE TABLE IF NOT EXISTS violations (
+        CREATE TABLE IF NOT EXISTS PRD01.violations (
             id INT AUTO_INCREMENT PRIMARY KEY,
             person_id VARCHAR(255),
             person_role VARCHAR(255),
@@ -66,7 +67,7 @@ def insert_case_result(
 ) -> None:
 
     sql = """
-        INSERT INTO violations (
+        INSERT INTO PRD01.violations (
             person_id,
             person_role,
             incident_file,
@@ -107,7 +108,7 @@ def insert_case_result(
 
 
 def get_all_violations() -> List[Dict[str, Any]]:
-    sql = "SELECT * FROM violations ORDER BY id ASC"
+    sql = "SELECT * FROM PRD01.violations ORDER BY id ASC"
 
     try:
         with engine.connect() as conn:
@@ -122,7 +123,7 @@ def get_all_violations() -> List[Dict[str, Any]]:
 def get_violations_by_person(person_id: str) -> List[Dict[str, Any]]:
     sql = """
         SELECT *
-        FROM violations
+        FROM PRD01.violations
         WHERE person_id = :person_id
         ORDER BY id ASC
     """
@@ -140,7 +141,7 @@ def get_violations_by_person(person_id: str) -> List[Dict[str, Any]]:
 def count_violations_by_person(person_id: str) -> int:
     sql = """
         SELECT COUNT(*) AS count
-        FROM violations
+        FROM PRD01.violations
         WHERE person_id = :person_id
           AND LOWER(decision) = 'violation'
     """
