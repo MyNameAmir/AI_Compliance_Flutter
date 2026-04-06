@@ -183,3 +183,22 @@ async def list_violations():
         return JSONResponse(content=rows)
     except Exception as e:
         return JSONResponse(content={"error": str(e)}, status_code=500)
+
+
+@app.get("/violations/{person_id}")
+async def get_person_violations(person_id: str):
+    """Return all violation records for a specific person."""
+    try:
+        from violation_store import get_violations_by_person
+        rows = get_violations_by_person(person_id)
+        for row in rows:
+            for k, v in row.items():
+                if hasattr(v, "isoformat"):
+                    row[k] = v.isoformat()
+        return JSONResponse(content={
+            "person_id": person_id,
+            "violation_count": len(rows),
+            "violations": rows
+        })
+    except Exception as e:
+        return JSONResponse(content={"error": str(e)}, status_code=500)
