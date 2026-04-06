@@ -37,4 +37,4 @@ to run the backend you need to cd into backend and run "uvicorn app:app --reload
 
 ensure you are on the 8002 and port.
 
-Any questions email amiralimoin@cmail.carleton.ca
+Any questions email amiralimoin@cmail.carleton.ca or fshok080@uottawa.ca
